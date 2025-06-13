@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Projeto-BioGen": {
+    "Projeto-BioGen-main": {
       "projectType": "application",
       "schematics": {},
       "root": "",

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -12,12 +12,11 @@ import { Subscription } from 'rxjs';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   assets: any;
   private navToggle: HTMLElement | null = null;
   private navMenu: HTMLElement | null = null;
-  
-  // Propriedades de autenticação
+
   isAuthenticated = false;
   currentUser: User | null = null;
   private authSubscription: Subscription = new Subscription();
@@ -25,12 +24,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    // Aguarda o DOM estar pronto
-    setTimeout(() => {
-      this.initMobileMenu();
-    }, 0);
-
-    // Inscrever-se nas mudanças de autenticação
+    // Inscrição para autenticação (pode ser feito no SSR)
     this.authSubscription.add(
       this.authService.isAuthenticated$.subscribe(isAuth => {
         this.isAuthenticated = isAuth;
@@ -44,13 +38,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
   }
 
+  ngAfterViewInit() {
+    // Somente executa no navegador
+    if (typeof document !== 'undefined') {
+      setTimeout(() => {
+        this.initMobileMenu();
+      }, 0);
+    }
+  }
+
   ngOnDestroy() {
-    // Remove event listeners para evitar memory leaks
     if (this.navToggle) {
       this.navToggle.removeEventListener('click', this.toggleMobileMenu.bind(this));
     }
-    
-    // Cancelar inscrições
+
     this.authSubscription.unsubscribe();
   }
 
@@ -60,29 +61,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private initMobileMenu() {
+    if (typeof document === 'undefined') return;
+
     this.navToggle = document.getElementById('nav-toggle');
     this.navMenu = document.getElementById('nav-menu');
 
     if (this.navToggle && this.navMenu) {
       this.navToggle.addEventListener('click', this.toggleMobileMenu.bind(this));
-      
-      // Fecha o menu quando clicar em um link
+
       const navLinks = this.navMenu.querySelectorAll('.nav-link');
       navLinks.forEach(link => {
         link.addEventListener('click', this.closeMobileMenu.bind(this));
       });
 
-      // Fecha o menu quando clicar fora dele
       document.addEventListener('click', this.handleOutsideClick.bind(this));
     }
   }
 
   private toggleMobileMenu() {
+    if (typeof document === 'undefined') return;
+
     if (this.navToggle && this.navMenu) {
       this.navToggle.classList.toggle('active');
       this.navMenu.classList.toggle('active');
-      
-      // Previne scroll do body quando menu está aberto
+
       if (this.navMenu.classList.contains('active')) {
         document.body.style.overflow = 'hidden';
       } else {
@@ -92,6 +94,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private closeMobileMenu() {
+    if (typeof document === 'undefined') return;
+
     if (this.navToggle && this.navMenu) {
       this.navToggle.classList.remove('active');
       this.navMenu.classList.remove('active');
@@ -100,9 +104,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private handleOutsideClick(event: Event) {
+    if (typeof document === 'undefined') return;
+
     const target = event.target as HTMLElement;
-    if (this.navToggle && this.navMenu && 
-        !this.navToggle.contains(target) && 
+    if (this.navToggle && this.navMenu &&
+        !this.navToggle.contains(target) &&
         !this.navMenu.contains(target)) {
       this.closeMobileMenu();
     }
