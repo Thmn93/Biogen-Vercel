@@ -44,7 +44,7 @@ async function startServer() {
     // Iniciar servidor
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
-      console.log(`🚀 Servidor rodando na em ${https://biogen-vercel.onrender.com}`);
+      console.log(`🚀 Servidor rodando na em https://biogen-vercel.onrender.com;
     });
   } catch (error) {
     console.error('❌ Erro ao iniciar servidor:', error);
