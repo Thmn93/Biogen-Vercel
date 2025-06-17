@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  apiUrl: 'https://biogen-vercel.onrender.com' // ou porta usada no serve.js
+  production: false, // tudo bem deixar como false para desenvolvimento
+  apiUrl: 'https://biogen-vercel.onrender.com/api'
 };

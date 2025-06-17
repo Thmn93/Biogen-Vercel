@@ -11,7 +11,7 @@ import { environment } from '../environments/Environments';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = environment.apiUrl; // Usando proxy para redirecionar ao backend
+  //private apiUrl = environment.apiUrl; // Usando proxy para redirecionar ao backend 
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -74,7 +74,7 @@ export class AuthService {
   }
 
   registerFornecedor(fornecedorData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/register/fornecedor`, fornecedorData).pipe(
+    return this.http.post(`${environment.apiUrl}/auth/register/fornecedor`, fornecedorData).pipe(
       tap({
         next: () => console.log('Fornecedor cadastrado com sucesso'),
         error: (err) => console.error('Erro no cadastro de fornecedor:', err)
@@ -83,7 +83,7 @@ export class AuthService {
   }
 
   registerBeneficiario(beneficiarioData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/register/beneficiario`, beneficiarioData).pipe(
+    return this.http.post(`${environment.apiUrl}/auth/register/beneficiario`, beneficiarioData).pipe(
       tap({
         next: () => console.log('Beneficiário cadastrado com sucesso'),
         error: (err) => console.error('Erro no cadastro de beneficiário:', err)
