@@ -19,7 +19,9 @@ const usersRoutes = require('./routes/users');
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: 'https://biogen-vercel-k5t5.vercel.app' // frontend Vercel
+}));
 app.use(express.json());
 
 // Swagger docs
@@ -44,7 +46,7 @@ async function startServer() {
     // Iniciar servidor
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
-      console.log(`🚀 Servidor rodando em https://biogen-vercel.onrender.com`);
+      console.log(`🚀 Servidor rodando na porta ${PORT}`);
     });
   } catch (error) {
     console.error('❌ Erro ao iniciar servidor:', error);
