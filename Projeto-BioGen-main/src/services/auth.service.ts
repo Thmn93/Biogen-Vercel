@@ -4,12 +4,14 @@ import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { User } from '../app/models/user.model';
 import { StorageService } from './storage.service';
+import { environment } from '../environments/Environments';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = '/api'; // Usando proxy para redirecionar ao backend
+  private apiUrl = environment.apiUrl; // Usando proxy para redirecionar ao backend
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
