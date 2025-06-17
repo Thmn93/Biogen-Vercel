@@ -106,7 +106,7 @@ graph LR
 
 ### **1. Clone o repositório**
 ```bash
-git clone https://github.com/biogen-team/projeto-biogen-2025.git
+git clone https://github.com/Thmn93/Biogen-Vercel
 cd projeto-biogen-2025
 ```
 
