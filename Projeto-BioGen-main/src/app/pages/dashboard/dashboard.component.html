@@ -1,0 +1,167 @@
+<script src="path/to/chartjs/dist/chart.umd.js"></script>
+
+<div class="container">
+  <div class="header-controls">
+    <button (click)="abrirModalGeral()">Lançamentos</button>
+
+
+
+    <!-- Modal Geral -->
+    <div *ngIf="modalGeralAberto" class="modal">
+      <div class="modal-content">
+        <span class="close" (click)="fecharModalGeral()">&times;</span>
+        <h2>Adicionar Lançamento - {{ anoAtual }}</h2>
+
+        <form [formGroup]="formularioGeral" (ngSubmit)="aoEnviarGeral()">
+          <div class="form-group">
+            <label for="mesSelecionado">Mês:</label>
+            <select formControlName="mes">
+              <option *ngFor="let mes of meses; let i = index" [value]="mes">{{ mes }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Toneladas Processadas (Ton):</label>
+            <input type="number" formControlName="toneladas" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Energia Gerada (KW):</label>
+            <input type="number" formControlName="energia" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Imposto Abatido (R$):</label>
+            <input type="number" formControlName="imposto" step="0.01" required>
+          </div>
+          <button type="submit">Salvar</button>
+        </form>
+      </div>
+    </div>
+    <!-- Fim do Modal Geral -->
+
+    <div class="export-controls">
+      <label for="yearSelect">Ano:</label>
+      <select id="yearSelect" [(ngModel)]="anoAtual" (change)="aoMudarAno()">
+        <option *ngFor="let ano of [2022,2023,2024,2025,2026,2027]" [value]="ano">{{ ano }}</option>
+      </select>
+      <label for="mesFiltro">Mês:</label>
+      <select id="mesFiltro" [(ngModel)]="mesFiltro">
+        <option value="">Todos</option>
+        <option *ngFor="let mes of meses" [value]="mes">{{ mes }}</option>
+      </select>
+      <button class="btn-exportar" (click)="abrirModalExportar()">Exportar PDF</button>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-container">
+      <canvas id="lineChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="pieChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Mês/Ano</th>
+        <th>Toneladas Processadas (Ton)</th>
+        <th>Energia Gerada (KW)</th>
+        <th>Imposto Abatido (R$)</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let mes of meses; let i = index">
+        <td>{{ mes }}/{{ anoAtual }}</td>
+        <td>{{ dadosPorAno[anoAtual].toneladas[i] || 0 }}</td>
+        <td>{{ dadosPorAno[anoAtual].energia[i] || 0 }}</td>
+        <td>{{ dadosPorAno[anoAtual].imposto[i] || 0 }}</td>
+        <td>
+          <button class="edit" (click)="abrirModal(i)">Editar</button>
+          <button class="delete" (click)="deletarLancamento(i)">Excluir</button>
+
+          <!-- Modal específico por mês -->
+          <div *ngIf="modalAbertoIndex === i" class="modal">
+            <div class="modal-content">
+              <span class="close" (click)="fecharModal()">&times;</span>
+              <h2>Editar - {{ mes }}/{{ anoAtual }}</h2>
+
+              <form [formGroup]="formularios[i]" (ngSubmit)="salvarEdicao(i)">
+                <div class="form-group">
+                  <label>Toneladas Processadas (Ton):</label>
+                  <input type="number" formControlName="toneladas" step="0.01" required>
+                </div>
+                <div class="form-group">
+                  <label>Energia Gerada (KW):</label>
+                  <input type="number" formControlName="energia" step="0.01" required>
+                </div>
+                <div class="form-group">
+                  <label>Imposto Abatido (R$):</label>
+                  <input type="number" formControlName="imposto" step="0.01" required>
+                </div>
+                <button type="submit">Salvar</button>
+              </form>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Modal de Exportação -->
+  <div *ngIf="modalExportarAberto" class="modal">
+    <div class="modal-content" style="max-width: 350px;">
+      <span class="close" (click)="fecharModalExportar()">&times;</span>
+      <h3>Exportar Relatório</h3>
+      <p>Escolha o ano do relatório:</p>
+      <select [(ngModel)]="anoExportacao" style="width: 100%; margin-bottom: 12px;">
+        <option *ngFor="let ano of [2022,2023,2024,2025,2026,2027]" [value]="ano">{{ ano }}</option>
+      </select>
+      <p>Como deseja exportar?</p>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin: 15px 0;">
+        <button (click)="exportarPDF('ano')">Ano inteiro</button>
+        <button (click)="exportarPDF('mes')">Escolher mês</button>
+      </div>
+      <div *ngIf="modoExportacao === 'mes'">
+        <label for="mesEscolhido">Selecione o mês:</label>
+        <select id="mesEscolhido" [(ngModel)]="mesEscolhido">
+          <option *ngFor="let mes of meses" [value]="mes">{{ mes }}</option>
+        </select>
+        <button style="margin-top: 10px;" (click)="confirmarExportarMes()">Exportar PDF do mês</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.export-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin: 30px 0 18px 0;
+}
+.export-controls label {
+  font-weight: 500;
+  margin-right: 4px;
+}
+.export-controls select, .export-controls button {
+  padding: 7px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+.btn-exportar {
+  background: #01b658;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+.btn-exportar:hover {
+  background: #018e46;
+}
+</style>

@@ -1,0 +1,47 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        role:
+          type: string
+        cnpj:
+          type: string
+        razaoSocial:
+          type: string
+        cep:
+          type: string
+        endereco:
+          type: string
+        numero:
+          type: string
+        nis:
+          type: string
+    Lancamento:
+      type: object
+      properties:
+        id:
+          type: integer
+        ano:
+          type: integer
+        mes:
+          type: string
+        toneladasProcessadas:
+          type: number
+        energiaGerada:
+          type: number
+        impostoAbatido:
+          type: number
+        userId:
+          type: integer
+    Auth:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string 

@@ -1,0 +1,113 @@
+<div class="dashboard-admin-container">
+  <h1>Dashboard Administrador</h1>
+
+  <form [formGroup]="buscaForm" (ngSubmit)="buscar()">
+    <input type="text" formControlName="termo" placeholder="Buscar por Razão Social, CNPJ, Email ou NIS...">
+    <button type="submit" [disabled]="!buscaForm.value.termo">Buscar</button>
+    <button type="button" (click)="buscaForm.reset(); buscar();" *ngIf="buscaForm.value.termo">Limpar</button>
+  </form>
+
+  <h2>Fornecedores</h2>
+  <div *ngIf="mensagemFornecedor" class="feedback-msg">{{ mensagemFornecedor }}</div>
+  <table *ngIf="fornecedoresFiltrados.length > 0">
+    <thead>
+      <tr>
+        <th>Razão Social</th>
+        <th>CNPJ</th>
+        <th>Email</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let fornecedor of fornecedoresFiltrados">
+        <td>{{ fornecedor.razaoSocial }}</td>
+        <td>{{ fornecedor.cnpj }}</td>
+        <td>{{ fornecedor.email }}</td>
+        <td>
+          <button (click)="visualizarLancamentos(fornecedor)">Ver Lançamentos</button>
+          <button (click)="abrirModalEditarUsuario(fornecedor)">Editar</button>
+          <button (click)="removerUsuario(fornecedor)">Remover</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Beneficiários</h2>
+  <div *ngIf="mensagemBeneficiario" class="feedback-msg">{{ mensagemBeneficiario }}</div>
+  <table *ngIf="beneficiariosFiltrados.length > 0">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>NIS</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let beneficiario of beneficiariosFiltrados">
+        <td>{{ beneficiario.email }}</td>
+        <td>{{ beneficiario.nis }}</td>
+        <td>
+          <button (click)="abrirModalEditarUsuario(beneficiario)">Editar</button>
+          <button (click)="removerUsuario(beneficiario)">Remover</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="graficos">
+    <!-- Placeholder para gráficos gerenciais -->
+    <h2>Gráficos Gerenciais</h2>
+    <div class="grafico-placeholder">[Gráfico de Fornecedores]</div>
+    <div class="grafico-placeholder">[Gráfico de Beneficiários]</div>
+    <div class="grafico-placeholder">[Gráfico de Energia Gerada]</div>
+  </div>
+
+  <div *ngIf="modalLancamentosAberto" class="modal-lancamentos-bg">
+    <div class="modal-lancamentos">
+      <button class="close-modal" (click)="fecharModalLancamentos()">&times;</button>
+      <h3>Lançamentos de {{ fornecedorSelecionado?.razaoSocial || fornecedorSelecionado?.email }}</h3>
+      <div *ngIf="mensagemLancamentos" class="feedback-msg">{{ mensagemLancamentos }}</div>
+      <table *ngIf="lancamentosFornecedor.length > 0">
+        <thead>
+          <tr>
+            <th>Ano</th>
+            <th>Mês</th>
+            <th>Toneladas Processadas</th>
+            <th>Energia Gerada</th>
+            <th>Imposto Abatido</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let lanc of lancamentosFornecedor">
+            <td>{{ lanc.ano }}</td>
+            <td>{{ lanc.mes }}</td>
+            <td>{{ lanc.toneladasProcessadas }}</td>
+            <td>{{ lanc.energiaGerada }}</td>
+            <td>{{ lanc.impostoAbatido }}</td>
+            <td>
+              <button (click)="abrirModalEditarLancamento(lanc)">Editar</button>
+              <button (click)="removerLancamento(lanc)">Remover</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de Edição de Lançamento -->
+  <app-editar-lancamento
+    [isOpen]="modalEditarLancamentoAberto"
+    [lancamento]="lancamentoSelecionado"
+    (close)="fecharModalEditarLancamento()"
+    (save)="salvarLancamento($event)">
+  </app-editar-lancamento>
+
+  <!-- Modal de Edição de Usuário -->
+  <app-editar-usuario
+    [isOpen]="modalEditarUsuarioAberto"
+    [usuario]="usuarioSelecionado"
+    (close)="fecharModalEditarUsuario()"
+    (save)="salvarUsuario($event)">
+  </app-editar-usuario>
+</div>
