@@ -6,7 +6,7 @@ import { StorageService } from './storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private apiUrl = '/api/users';
+  private apiUrl = 'https://biogen-vercel.onrender.com/api/users';
 
   constructor(private http: HttpClient, private storage: StorageService) {}
 
