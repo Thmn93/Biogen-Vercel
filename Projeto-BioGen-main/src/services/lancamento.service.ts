@@ -7,7 +7,7 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class LancamentosService {
-  private apiUrl = 'https://biogen-vercel.onrender.com/api/lancamentos';
+  private apiUrl = 'https://biogen-vercel.onrender.com';
   lancamentosCache: any[] = [];
 
   constructor(private http: HttpClient) {}
