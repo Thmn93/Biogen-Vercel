@@ -72,12 +72,28 @@ class LancamentoController {
       }
       const db = getDatabase();
       // Verifica se já existe outro lançamento para o mesmo mês/ano/usuário
-      const existente = db.prepare(
-        'SELECT id FROM lancamentos WHERE userId = ? AND ano = ? AND mes = ? AND id != ?'
-      ).get(req.user.id, value.ano, value.mes, id);
-      if (existente) {
-        return res.status(409).json({ error: 'Já existe lançamento para este mês/ano.' });
-      }
+      const lancamentoAtual = db.prepare('SELECT * FROM lancamentos WHERE id = ?').get(id);
+if (!lancamentoAtual) {
+  return res.status(404).json({ error: 'Lançamento não encontrado' });
+}
+
+if (req.user.role !== 'admin' && lancamentoAtual.userId !== req.user.id) {
+  return res.status(403).json({ error: 'Acesso negado' });
+}
+
+  // Só verifica duplicidade se mudou ano/mes
+  const anoAlterado = value.ano !== lancamentoAtual.ano;
+  const mesAlterado = value.mes !== lancamentoAtual.mes;
+
+  if (anoAlterado || mesAlterado) {
+    const existente = db.prepare(
+      'SELECT id FROM lancamentos WHERE userId = ? AND ano = ? AND mes = ? AND id != ?'
+    ).get(req.user.id, value.ano, value.mes, id);
+
+    if (existente) {
+      return res.status(409).json({ error: 'Já existe lançamento para este mês/ano.' });
+    }
+  }
       const lancamento = db.prepare('SELECT * FROM lancamentos WHERE id = ?').get(id);
       if (!lancamento) {
         return res.status(404).json({ error: 'Lançamento não encontrado' });
@@ -99,23 +115,35 @@ class LancamentoController {
 
   // Deletar lançamento
   async delete(req, res) {
-    try {
-      const { id } = req.params;
-      const db = getDatabase();
-      const lancamento = db.prepare('SELECT * FROM lancamentos WHERE id = ?').get(id);
-      if (!lancamento) {
-        return res.status(404).json({ error: 'Lançamento não encontrado' });
-      }
-      if (req.user.role !== 'admin' && lancamento.userId !== req.user.id) {
-        return res.status(403).json({ error: 'Acesso negado' });
-      }
-      db.prepare('DELETE FROM lancamentos WHERE id = ?').run(id);
-      res.json({ message: 'Lançamento deletado com sucesso' });
-    } catch (error) {
-      console.error('Erro ao deletar lançamento:', error);
-      res.status(500).json({ error: 'Erro interno do servidor' });
+  try {
+    const { id } = req.params;
+    console.log('ID recebido para deletar:', id);
+
+    const db = getDatabase();
+    const lancamento = db.prepare('SELECT * FROM lancamentos WHERE id = ?').get(id);
+    console.log('Lançamento encontrado:', lancamento);
+    console.log('Usuário autenticado:', req.user);
+
+    if (!lancamento) {
+      return res.status(404).json({ error: 'Lançamento não encontrado' });
     }
+
+    const lancamentoUserId = lancamento.userId || lancamento.user_id;
+
+    if (req.user.role !== 'admin' && lancamentoUserId !== req.user.id) {
+      console.warn(`Usuário ${req.user.id} tentou excluir lançamento de ${lancamentoUserId}`);
+      return res.status(403).json({ error: 'Acesso negado' });
+    }
+
+    db.prepare('DELETE FROM lancamentos WHERE id = ?').run(id);
+    res.json({ message: 'Lançamento deletado com sucesso' });
+
+  } catch (error) {
+    console.error('Erro ao deletar lançamento:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
   }
+}
+
 }
 
 module.exports = new LancamentoController(); 
