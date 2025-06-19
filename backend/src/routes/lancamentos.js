@@ -97,7 +97,7 @@ router.use(requireAdminOrFornecedor);
 
 router.post('/', lancamentoController.create);
 router.get('/', lancamentoController.list);
-router.put('/:id', lancamentoController.update);
-router.delete('/:id', lancamentoController.delete);
+router.put('/', lancamentoController.update);
+router.delete('/', lancamentoController.delete);
 
 module.exports = router;
