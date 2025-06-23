@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -12,8 +12,18 @@ export class LancamentosService {
 
   constructor(private http: HttpClient) {}
 
+  // Cabeçalho com token JWT
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+  }
+
   getLancamentos(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
+    return this.http.get<any[]>(this.apiUrl, {
+      headers: this.getAuthHeaders()
+    }).pipe(
       tap(lancamentos => this.lancamentosCache = lancamentos)
     );
   }
@@ -25,22 +35,32 @@ export class LancamentosService {
       toneladasProcessadas: lancamento.toneladas,
       energiaGerada: lancamento.energia,
       impostoAbatido: lancamento.imposto
+    }, {
+      headers: this.getAuthHeaders()
     });
   }
 
   deletarLancamento(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   atualizarLancamento(id: number, lancamento: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, lancamento);
+    return this.http.put(`${this.apiUrl}/${id}`, lancamento, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   getLancamentosPorUserId(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}?userId=${userId}`);
+    return this.http.get<any[]>(`${this.apiUrl}?userId=${userId}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   removerLancamento(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 }
