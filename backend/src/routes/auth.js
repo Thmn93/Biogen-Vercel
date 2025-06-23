@@ -255,8 +255,10 @@ router.post('/login', async (req, res) => {
     if (!user) {
       return res.status(401).json({
         error: 'Usuário não cadastrado',
-        redirect: '/Projeto-BioGen-main/src/app/pages/login.component.html'  // cliente pode usar isso para redirecionar
+        redirect: '/login?mensagem=UsuarioNaoCadastrado'
       });
+
+
     }
 
     if (user.role === 'beneficiario') {
