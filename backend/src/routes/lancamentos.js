@@ -89,15 +89,17 @@
 const express = require('express');
 const lancamentoController = require('../controllers/lancamentoController');
 const { authenticateToken, requireAdminOrFornecedor } = require('../middleware/auth');
+
 const router = express.Router();
 
-// Rotas de lançamentos (protegidas por autenticação)
+// Autenticação obrigatória
 router.use(authenticateToken);
 router.use(requireAdminOrFornecedor);
 
+// Rotas corretas
 router.post('/', lancamentoController.create);
 router.get('/', lancamentoController.list);
-router.put('/', lancamentoController.update);
-router.delete('/', lancamentoController.delete);
+router.put('/:id', lancamentoController.update);     
+router.delete('/:id', lancamentoController.delete);  
 
 module.exports = router;
