@@ -281,15 +281,15 @@ GET /api-docs                      # Documentação Swagger
   <table>
     <tr>
       <td align="center">
-        <img src="./Projeto-BioGen-main/public/assets/home.jfif" width="250" height="180" style="object-fit: cover;"/>
+        <img src="./Projeto-BioGen-main/public/assets/Homepage.jpeg" width="250" height="180" style="object-fit: cover;"/>
         <br><strong>Página Inicial</strong>
       </td>
       <td align="center">
-        <img src="./Projeto-BioGen-main/public/assets/dashboardFornecedor.jfif" width="250" height="180" style="object-fit: cover;"/>
+        <img src="./Projeto-BioGen-main/public/assets/Dashboard-sup.jpeg" width="250" height="180" style="object-fit: cover;"/>
         <br><strong>Dashboard Fornecedor</strong>
       </td>
       <td align="center">
-        <img src="./Projeto-BioGen-main/public/assets/dashboardAdm.jfif" width="250" height="180" style="object-fit: cover;"/>
+        <img src="./Projeto-BioGen-main/public/assets/Dashboard-admin.jpeg" width="250" height="180" style="object-fit: cover;"/>
         <br><strong>Dashboard Administrador</strong>
       </td>
     </tr>
