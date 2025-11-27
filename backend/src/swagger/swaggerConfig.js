@@ -9,7 +9,7 @@ const options = {
       description: 'Documentação da API do projeto BioGen',
     },
     servers: [
-      { url: 'http://localhost:3008' }
+      { url: 'https://biogen-vercel.onrender.com' }
     ],
     components: {
       securitySchemes: {
